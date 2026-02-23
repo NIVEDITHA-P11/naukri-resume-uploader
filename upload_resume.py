@@ -35,8 +35,8 @@ def upload_resume():
         driver.get("https://www.naukri.com/nlogin/login")
         time.sleep(random.randint(3, 6))
 
-        driver.find_element(By.ID, "usernameField").send_keys(os.environ["nivedithap118@gmail.com"])
-        driver.find_element(By.ID, "passwordField").send_keys(os.environ["nivedithap@11898"])
+        driver.find_element(By.ID, "usernameField").send_keys(os.environ["NAUKRI_EMAIL"])
+        driver.find_element(By.ID, "passwordField").send_keys(os.environ["NAUKRI_PASSWORD"])
         driver.find_element(By.ID, "passwordField").send_keys(Keys.RETURN)
 
         time.sleep(random.randint(5, 8))
@@ -53,19 +53,21 @@ def upload_resume():
         return True
 
     except Exception as e:
-        driver.quit()
         print("Error:", e)
+        driver.quit()
         return False
 
-# Retry logic
+
+success = False
+
 for attempt in range(2):
     success = upload_resume()
     if success:
         print("Resume uploaded successfully!")
-            send_email(
-        "Naukri Resume Upload Successfully",
-        "The automated resume upload Successfully. Please check GitHub Actions logs."
-    )
+        send_email(
+            "Naukri Resume Upload Successful",
+            "Your automated resume upload completed successfully."
+        )
         break
     else:
         time.sleep(10)
@@ -75,4 +77,3 @@ if not success:
         "Naukri Resume Upload Failed",
         "The automated resume upload failed. Please check GitHub Actions logs."
     )
-
