@@ -29,5 +29,7 @@ jobs:
       - name: Run Script
         run: python upload_resume.py
         env:
-          NAUKRI_EMAIL: ${{ secrets.NAUKRI_EMAIL }}
-          NAUKRI_PASSWORD: ${{ secrets.NAUKRI_PASSWORD }}
+            NAUKRI_EMAIL: ${{ secrets.NAUKRI_EMAIL }}
+            NAUKRI_PASSWORD: ${{ secrets.NAUKRI_PASSWORD }}
+            ALERT_EMAIL: ${{ secrets.ALERT_EMAIL }}
+            ALERT_PASSWORD: ${{ secrets.ALERT_PASSWORD }}
