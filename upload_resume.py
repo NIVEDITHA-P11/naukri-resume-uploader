@@ -62,6 +62,10 @@ for attempt in range(2):
     success = upload_resume()
     if success:
         print("Resume uploaded successfully!")
+            send_email(
+        "Naukri Resume Upload Successfully",
+        "The automated resume upload Successfully. Please check GitHub Actions logs."
+    )
         break
     else:
         time.sleep(10)
@@ -71,3 +75,4 @@ if not success:
         "Naukri Resume Upload Failed",
         "The automated resume upload failed. Please check GitHub Actions logs."
     )
+
