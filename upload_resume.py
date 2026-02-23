@@ -4,36 +4,70 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 import time
 import os
+import random
+import smtplib
+from email.mime.text import MIMEText
 
-options = Options()
-options.add_argument("--headless")
-options.add_argument("--no-sandbox")
-options.add_argument("--disable-dev-shm-usage")
+def send_email(subject, body):
+    sender = os.environ["ALERT_EMAIL"]
+    password = os.environ["ALERT_PASSWORD"]
+    receiver = os.environ["ALERT_EMAIL"]
 
-driver = webdriver.Chrome(options=options)
+    msg = MIMEText(body)
+    msg["Subject"] = subject
+    msg["From"] = sender
+    msg["To"] = receiver
 
-try:
-    driver.get("https://www.naukri.com/nlogin/login")
-    time.sleep(3)
+    with smtplib.SMTP("smtp.gmail.com", 587) as server:
+        server.starttls()
+        server.login(sender, password)
+        server.send_message(msg)
 
-    driver.find_element(By.ID, "usernameField").send_keys(os.environ["nivedithap118@gmail.com"])
-    driver.find_element(By.ID, "passwordField").send_keys(os.environ["nivedithap@11898"])
-    driver.find_element(By.ID, "passwordField").send_keys(Keys.RETURN)
+def upload_resume():
+    options = Options()
+    options.add_argument("--headless")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
 
-    time.sleep(5)
+    driver = webdriver.Chrome(options=options)
 
-    driver.get("https://www.naukri.com/mnjuser/profile")
-    time.sleep(5)
+    try:
+        driver.get("https://www.naukri.com/nlogin/login")
+        time.sleep(random.randint(3, 6))
 
-    upload = driver.find_element(By.XPATH, "//input[@type='file']")
-    upload.send_keys("Niveditha_P-Resume.pdf")
+        driver.find_element(By.ID, "usernameField").send_keys(os.environ["nivedithap118@gmail.com"])
+        driver.find_element(By.ID, "passwordField").send_keys(os.environ["nivedithap@11898"])
+        driver.find_element(By.ID, "passwordField").send_keys(Keys.RETURN)
 
-    time.sleep(5)
+        time.sleep(random.randint(5, 8))
 
-    print("Resume uploaded successfully!")
+        driver.get("https://www.naukri.com/mnjuser/profile")
+        time.sleep(random.randint(5, 8))
 
-except Exception as e:
-    print("Error:", e)
+        upload = driver.find_element(By.XPATH, "//input[@type='file']")
+        upload.send_keys("Niveditha_P-Resume.pdf")
 
-finally:
-    driver.quit()
+        time.sleep(5)
+
+        driver.quit()
+        return True
+
+    except Exception as e:
+        driver.quit()
+        print("Error:", e)
+        return False
+
+# Retry logic
+for attempt in range(2):
+    success = upload_resume()
+    if success:
+        print("Resume uploaded successfully!")
+        break
+    else:
+        time.sleep(10)
+
+if not success:
+    send_email(
+        "Naukri Resume Upload Failed",
+        "The automated resume upload failed. Please check GitHub Actions logs."
+    )
